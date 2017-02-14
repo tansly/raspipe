@@ -31,3 +31,6 @@
 # Debug files
 *.dSYM/
 *.su
+
+# For trying out new things
+experimental/
