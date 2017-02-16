@@ -129,11 +129,6 @@ int start_server(const char *bind_addr, const char *bind_port,
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
-    sa.sa_handler = sigchld_handler;
-    sigaction(SIGCHLD, &sa, NULL);
-    sa.sa_handler = terminate_handler;
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
     server.curr_clients = 0;
     server.max_clients = max_clients;
     server.backlog = backlog;
@@ -141,8 +136,15 @@ int start_server(const char *bind_addr, const char *bind_port,
     server.bind_addr = strdup(bind_addr);
     server.bind_port = strdup(bind_port);
     if (bind_and_listen() != 0) {
+        free(server.bind_addr);
+        free(server.bind_port);
         return 1;
     }
+    sa.sa_handler = sigchld_handler;
+    sigaction(SIGCHLD, &sa, NULL);
+    sa.sa_handler = terminate_handler;
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
     return 0; // YAY!!
 }
 
