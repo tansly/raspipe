@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -Wextra -ggdb
+CFLAGS=-Wall -ggdb
 SRCS=raspiped.c server.c
 OBJS=$(patsubst %.c, %.o, $(SRCS))
 HDRS=globals.h

@@ -17,6 +17,12 @@ int start_server(const char *bind_addr, const char *bind_port,
  */
 int cleanup(void);
 
+/* The main loop of the program.
+ * accept() the connections, recv() data,
+ * and?
+ */
+int main_loop(void);
+
 //////////////////////////////////////////////////////////////////////
 
 #endif
