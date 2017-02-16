@@ -74,6 +74,7 @@ static int bind_and_listen(void)
     }
     freeaddrinfo(servinfo);
     if (!rp) { // no address succeeded
+        fprintf(stderr, "Could not bind anywhere!\n");
         return 1;
     }
     // Since bind() has succeeded, we now listen() the socket.
