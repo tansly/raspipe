@@ -93,14 +93,17 @@ static int bind_and_listen(void)
  */
 static void child_main(int recv_sock)
 {
+    pid_t pid;
+    int pipefd[2];
     char buf[BUFSIZ];
     size_t bufsiz = sizeof buf;
     ssize_t recved;
     // Child will not need the signal handlers of the parent.
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
-    sa.sa_handler = SIG_DFL;
+    sa.sa_handler = SIG_IGN;
     sigaction(SIGCHLD, &sa, NULL);
+    sa.sa_handler = SIG_DFL;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 
@@ -109,11 +112,32 @@ static void child_main(int recv_sock)
     free(server.bind_port);
     close(server.listen_sock);
 
-    // We can now recv()! (I hope)
-    // Stops on error or closed connection
-    // Maybe treat errors seperately?
-    while ((recved = recv(recv_sock, buf, bufsiz, 0)) > 0) {
-        write(1, buf, recved);
+    if (pipe(pipefd) == -1) {
+        perror("pipe() error");
+        exit(1);
+    }
+    pid = fork();
+    if (pid == -1) {
+        perror("fork() error");
+        exit(1);
+    } else if (pid == 0) {
+        close(pipefd[0]);
+        if (dup2(pipefd[1], 1) == -1) {
+            perror("dup2() error");
+            exit(1);
+        }
+        while ((recved = recv(recv_sock, buf, bufsiz, 0)) > 0) {
+            write(1, buf, recved);
+        }
+    } else {
+        char *argv[] = { "/usr/bin/aplay", "-f", "cd", NULL };
+        close(pipefd[1]);
+        close(recv_sock);
+        if (dup2(pipefd[0], 0) == -1) {
+            perror("dup2() error");
+            exit(1);
+        }
+        execvp("/usr/bin/aplay", argv);
     }
     close(recv_sock);
     exit(0);
