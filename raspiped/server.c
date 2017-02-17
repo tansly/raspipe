@@ -137,7 +137,7 @@ static void child_main(int recv_sock)
             perror("dup2() error");
             exit(1);
         }
-        execvp("/usr/bin/aplay", argv);
+        execvp(argv[0], argv);
         // ERROR IF WE REACH HERE
         perror("execvp() error");
         exit(1);
