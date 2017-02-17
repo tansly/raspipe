@@ -37,3 +37,6 @@ experimental/
 
 # Tags file
 tags
+
+# vim swap files
+*.swp
