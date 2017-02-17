@@ -192,10 +192,5 @@ int cleanup(void)
     free(server.bind_addr);
     free(server.bind_port);
     close(server.listen_sock);
-
-    // What if the children don't wanna die? TODO
-    while (wait(NULL) != -1) {
-        server.curr_clients--;
-    }
     return 0;
 }
