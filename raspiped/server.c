@@ -96,9 +96,7 @@ static void child_main(int recv_sock)
     char buf[BUFSIZ];
     size_t bufsiz = sizeof buf;
     ssize_t recved;
-    /* Child will not need the signal handlers of the parent.
-     * Do I really need to do this? Better check. TODO!!
-     */
+    // Child will not need the signal handlers of the parent.
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
     sa.sa_handler = SIG_DFL;
@@ -121,8 +119,7 @@ static void child_main(int recv_sock)
     exit(0);
 }
 
-/* TODO: Signal handlers: Now we handle SIGCHLD.
- * TODO: Daemonizing
+/* TODO: Daemonizing
  */
 int start_server(const char *bind_addr, const char *bind_port,
                 int max_clients, int backlog, int daemonize)
