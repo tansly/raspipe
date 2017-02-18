@@ -19,20 +19,17 @@
 
 static struct {
     int curr_clients;   // current number of clients 
-    int max_clients;    // max number of clients, will not be much
+    int max_clients;    // max number of clients
     int backlog;
     int listen_sock;    // socket that the server is listening on
     char *bind_addr;    // address to bind
     char *bind_port;    // port to bind
 } server;
 
-/* TODO: Learn what happens if waitpid() returns -1.
- * May need a fix then.
- */
 static void sigchld_handler(int sig)
 {
     int old_errno = errno;
-    while (waitpid(-1, NULL, WNOHANG) > 0) { // Does not handle errors
+    while (waitpid(-1, NULL, WNOHANG) > 0) {
         server.curr_clients--;
     }
     errno = old_errno;
@@ -89,8 +86,6 @@ static int bind_and_listen(void)
 }
 
 /* Main routine for fork()ed child
- * Currently just write()s what it recv()s to stdout
- * TODO: Error checking
  */
 static void child_main(int recv_sock)
 {
@@ -171,7 +166,8 @@ int start_server(const char *bind_addr, const char *bind_port,
 }
 
 
-/* TODO: 1) Error checking
+/* TODO:
+ * 1) Error checking
  * 2) Get client address, log it or print it or something
  */
 void main_loop(void)
@@ -190,7 +186,6 @@ void main_loop(void)
         if (server.curr_clients >= server.max_clients) {
             fprintf(stderr, "Max number of clients (%d)"
                     "is reached.\n", server.max_clients);
-            // This seems rude. Maybe notify the client?
             close(recv_sock);
             continue;
         }
