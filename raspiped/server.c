@@ -174,7 +174,7 @@ int start_server(const char *bind_addr, const char *bind_port,
 /* TODO: 1) Error checking
  * 2) Get client address, log it or print it or something
  */
-int main_loop(void)
+void main_loop(void)
 {
     int recv_sock;
     pid_t pid;

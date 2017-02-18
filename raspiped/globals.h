@@ -21,7 +21,7 @@ int cleanup(void);
  * accept() the connections, recv() data,
  * and?
  */
-int main_loop(void);
+void main_loop(void);
 
 //////////////////////////////////////////////////////////////////////
 
