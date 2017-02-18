@@ -12,6 +12,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#define BACKLOG 10
+
 /* TODO: Better return some error codes on failure?
  */
 
@@ -149,13 +151,13 @@ static void child_main(int recv_sock)
 /* TODO: Daemonizing
  */
 int start_server(const char *bind_addr, const char *bind_port,
-                int max_clients, int backlog, int daemonize)
+                int max_clients, int daemonize)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
     server.curr_clients = 0;
     server.max_clients = max_clients;
-    server.backlog = backlog;
+    server.backlog = BACKLOG;
     server.daemon = daemonize; // does nothing yet
     server.bind_addr = strdup(bind_addr);
     server.bind_port = strdup(bind_port);

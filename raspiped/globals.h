@@ -10,7 +10,7 @@
  * Returns 0 on success, non-zero on error
  */
 int start_server(const char *bind_addr, const char *bind_port,
-                int max_clients, int backlog, int daemonize);
+                int max_clients, int daemonize);
 
 /* Do the necessary cleanup and shut the server down.
  * Returns 0 on success, non-zero on error
