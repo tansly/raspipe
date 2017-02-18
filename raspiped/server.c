@@ -22,7 +22,6 @@ static struct {
     int max_clients;    // max number of clients, will not be much
     int backlog;
     int listen_sock;    // socket that the server is listening on
-    int daemon;         // are we a daemon? not sure if needed
     char *bind_addr;    // address to bind
     char *bind_port;    // port to bind
 } server;
@@ -148,17 +147,14 @@ static void child_main(int recv_sock)
     exit(0);
 }
 
-/* TODO: Daemonizing
- */
 int start_server(const char *bind_addr, const char *bind_port,
-                int max_clients, int daemonize)
+                int max_clients)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
     server.curr_clients = 0;
     server.max_clients = max_clients;
     server.backlog = BACKLOG;
-    server.daemon = daemonize; // does nothing yet
     server.bind_addr = strdup(bind_addr);
     server.bind_port = strdup(bind_port);
     if (bind_and_listen() != 0) {

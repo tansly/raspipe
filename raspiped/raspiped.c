@@ -9,7 +9,7 @@
 int main(void)
 {
     int status = 0;
-    status = start_server("0.0.0.0", "6666", 5, 0);
+    status = start_server("0.0.0.0", "6666", 5);
     if (status != 0) {
         fprintf(stderr, "Failed to start server!\n");
         return 1;
