@@ -35,11 +35,6 @@ static void sigchld_handler(int sig)
     errno = old_errno;
 }
 
-static void terminate_handler(int sig)
-{
-    exit(cleanup());
-}
-
 /* Assuming that the server struct is filled.
  * Then bind and listen.
  * Set the server's listen_sock accordingly.
@@ -159,9 +154,6 @@ int start_server(const char *bind_addr, const char *bind_port,
     }
     sa.sa_handler = sigchld_handler;
     sigaction(SIGCHLD, &sa, NULL);
-    sa.sa_handler = terminate_handler;
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
     return 0; // YAY!!
 }
 
@@ -202,12 +194,4 @@ void main_loop(void)
             server.curr_clients++;
         }
     }
-}
-
-int cleanup(void)
-{
-    free(server.bind_addr);
-    free(server.bind_port);
-    close(server.listen_sock);
-    return 0;
 }
