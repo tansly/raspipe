@@ -24,6 +24,8 @@ static struct {
     int listen_sock;    // socket that the server is listening on
     char *bind_addr;    // address to bind
     char *bind_port;    // port to bind
+    char *command;      // will be tokenized
+    char **argv;        // used to access tokens in *command
 } server;
 
 static void sigchld_handler(int sig)
@@ -121,14 +123,13 @@ static void child_main(int recv_sock)
             write(1, buf, recved);
         }
     } else {
-        char *argv[] = { "/usr/bin/aplay", "-f", "cd", NULL };
         close(pipefd[1]);
         close(recv_sock);
         if (dup2(pipefd[0], 0) == -1) {
             perror("dup2() error");
             exit(1);
         }
-        execvp(argv[0], argv);
+        execvp(server.argv[0], server.argv);
         // ERROR IF WE REACH HERE
         perror("execvp() error");
         exit(1);
@@ -137,8 +138,27 @@ static void child_main(int recv_sock)
     exit(0);
 }
 
+/* Sets server.command, tokenizes it and sets server.argv.
+ * server.command should not be accessed directly,
+ * server.argv provides access to the arguments.
+ */
+void set_argv(const char *command)
+{
+    char **argv;
+    size_t i = 0, size = 2;
+    server.command = strdup(command);
+    argv = malloc(size * sizeof *argv);
+    argv[i++] = strtok(server.command, " ");
+    while ((argv[i++] = strtok(NULL, " "))) {
+        if (i >= size) {
+            argv = realloc(argv, ++size * sizeof *argv);
+        }
+    }
+    server.argv = argv;
+}
+
 int start_server(const char *bind_addr, const char *bind_port,
-                int max_clients)
+        const char *command, int max_clients)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);
@@ -152,6 +172,9 @@ int start_server(const char *bind_addr, const char *bind_port,
         free(server.bind_port);
         return 1;
     }
+    /* Set these only if we succesfully listen.
+     * Otherwise they are not necessary */
+    set_argv(command);
     sa.sa_handler = sigchld_handler;
     sigaction(SIGCHLD, &sa, NULL);
     return 0; // YAY!!
